@@ -1,6 +1,6 @@
 <template>
 	<v-app>
-		<v-app-bar app color="primary" dark dense flat outlined>
+		<v-app-bar app color="primary" dark flat outlined>
 			<v-tabs fixed-tabs>
 				<v-tab to="/symmetric">symmetric</v-tab>
 				<v-tab to="/asymmetric">asymmetric</v-tab>

@@ -1,5 +1,5 @@
 <template>
-	<v-container>
+	<v-container class="px-6 py-6">
 		<SModeSelect @modeChanged="toggleView"></SModeSelect>
 		<SEncrypt v-if="mode === 'e'"></SEncrypt>
 		<SDecrypt v-else></SDecrypt>
