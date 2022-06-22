@@ -1,7 +1,11 @@
 <template>
 	<v-app>
-		<v-app-bar app color="primary" dark> </v-app-bar>
-
+		<v-app-bar app color="primary" dark dense flat outlined>
+			<v-tabs fixed-tabs>
+				<v-tab to="/symmetric">symmetric</v-tab>
+				<v-tab to="/asymmetric">asymmetric</v-tab>
+			</v-tabs>
+		</v-app-bar>
 		<v-main>
 			<router-view />
 		</v-main>
@@ -12,9 +16,7 @@
 export default {
 	name: 'App',
 	data() {
-		return {
-
-    };
+		return {};
 	},
 };
 </script>
