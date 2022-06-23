@@ -46,29 +46,63 @@
 			@click:append="copyToClipboard(message)"
 		>
 		</v-textarea>
-		<v-btn x-large color="primary" elevation="0" block>Encrypt!</v-btn>
+		<v-btn x-large color="primary" elevation="0" block @click="encryptData">Encrypt!</v-btn>
+		<v-snackbar
+			bottom
+			elevation="0"
+			class=""
+			v-model="snackbar"
+			:timeout="3000"
+		>
+			Copied to clipboard
+			<template v-slot:action="{ attrs }">
+				<v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+					Close
+				</v-btn>
+			</template>
+		</v-snackbar>
 	</v-container>
 </template>
 
 <script>
-import { clipboard } from 'electron';
+import { clipboard, ipcRenderer } from 'electron';
 
 export default {
 	data() {
 		return {
 			showPassword: false,
+			snackbar: false,
 			password: '',
 			key: '',
 			message: '',
 		};
 	},
 	methods: {
-		generateKey() {
-			
+		async generateKey() {
+			try {
+				const psw = this.password.trim();
+				const result = await ipcRenderer.invoke('gen-symmetric-key', psw);
+				this.key = result[0];
+			} catch (err) {
+				// display error
+				console.log(err);
+			}
+		},
+		async encryptData() {
+			try {
+				const result = await ipcRenderer.invoke(
+					'encrypt-symmetric',
+					this.message,
+					this.key
+				);
+				console.log(result);
+			} catch (err) {
+				console.log(err);
+			}
 		},
 		copyToClipboard(data) {
 			clipboard.writeText(data);
-			// render toast
+			this.snackbar = true;
 		},
 	},
 };
