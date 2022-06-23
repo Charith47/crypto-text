@@ -25,23 +25,40 @@
 			no-resize
 			clearable
 			label="Decrypted message"
+			:append-icon="decryptedMessage ? 'mdi-content-copy' : ''"
+			@click:append="copyToClipboard(decryptedMessage)"
 		>
 		</v-textarea>
 		<v-btn x-large color="primary" elevation="0" block @click="decryptData">
 			Decrypt!
 		</v-btn>
-		<v-btn class="my-4" block elevation="0">clear</v-btn>
+		<v-btn class="my-4" block elevation="0" @click="clearFields">clear</v-btn>
+		<v-snackbar
+			bottom
+			elevation="0"
+			class=""
+			v-model="snackbar"
+			:timeout="3000"
+		>
+			Copied to clipboard
+			<template v-slot:action="{ attrs }">
+				<v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+					Close
+				</v-btn>
+			</template>
+		</v-snackbar>
 	</v-container>
 </template>
 
 <script>
-import { ipcRenderer } from 'electron';
+import { clipboard, ipcRenderer } from 'electron';
 export default {
 	data() {
 		return {
 			key: '',
 			ciphertext: '',
 			decryptedMessage: '',
+			snackbar: false,
 		};
 	},
 	methods: {
@@ -52,10 +69,19 @@ export default {
 					this.ciphertext,
 					this.key
 				);
-                this.decryptedMessage = result[0].data;
+				this.decryptedMessage = result[0].data;
 			} catch (err) {
 				console.log(err);
 			}
+		},
+		copyToClipboard(data) {
+			clipboard.writeText(data);
+			this.snackbar = true;
+		},
+		clearFields() {
+			this.key = '';
+			this.ciphertext = '';
+			this.decryptedMessage = '';
 		},
 	},
 };

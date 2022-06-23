@@ -6,6 +6,7 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 import { keyGen, encrypt, decrypt } from './symmetric.js';
+import { genKeyPair } from './asymmetric.js';
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -16,7 +17,8 @@ async function createWindow() {
 	// Create the browser window.
 	const win = new BrowserWindow({
 		width: 600,
-		height: 810,
+		height: 800,
+		autoHideMenuBar: true,
 		webPreferences: {
 			// Use pluginOptions.nodeIntegration, leave this alone
 			// See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -88,6 +90,7 @@ ipcMain.handle('gen-symmetric-key', async (event, password) => {
 	try {
 		key = await keyGen(password);
 	} catch (err) {
+		console.log(err);
 		error = err;
 	}
 
@@ -101,6 +104,7 @@ ipcMain.handle('encrypt-symmetric', async (event, message, key) => {
 	try {
 		encryptedData = await encrypt(message, key);
 	} catch (err) {
+		console.log(err);
 		error = err;
 	}
 
@@ -114,8 +118,20 @@ ipcMain.handle('decrypt-symmetric', async (event, data, key) => {
 	try {
 		decryptedData = await decrypt(data, key);
 	} catch (err) {
+		console.log(err);
 		error = err;
 	}
 
 	return [decryptedData, error];
+});
+
+ipcMain.handle('gen-key-pair', async (event) => {
+	let data = null;
+	try {
+		data = await genKeyPair();
+		console.log(data);
+	} catch (err) {
+		console.log(err);
+	}
+	return data;
 });
