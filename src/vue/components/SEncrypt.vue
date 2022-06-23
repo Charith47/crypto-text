@@ -46,7 +46,10 @@
 			@click:append="copyToClipboard(message)"
 		>
 		</v-textarea>
-		<v-btn x-large color="primary" elevation="0" block @click="encryptData">Encrypt!</v-btn>
+		<v-btn x-large color="primary" elevation="0" block @click="encryptData"
+			>Encrypt!</v-btn
+		>
+		<v-btn class="my-4" block elevation="0" @click="clearFields">clear</v-btn>
 		<v-snackbar
 			bottom
 			elevation="0"
@@ -77,6 +80,12 @@ export default {
 			message: '',
 		};
 	},
+	mounted() {
+		// load saved data
+	},
+	beforeDestroy() {
+		// save fields in store
+	},
 	methods: {
 		async generateKey() {
 			try {
@@ -90,15 +99,23 @@ export default {
 		},
 		async encryptData() {
 			try {
+				console.log(this.$data);
 				const result = await ipcRenderer.invoke(
 					'encrypt-symmetric',
 					this.message,
 					this.key
 				);
 				console.log(result);
+				this.message = result[0].data;
 			} catch (err) {
+				// display error
 				console.log(err);
 			}
+		},
+		clearFields() {
+			this.password = '';
+			this.key = '';
+			this.message = '';
 		},
 		copyToClipboard(data) {
 			clipboard.writeText(data);

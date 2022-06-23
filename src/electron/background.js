@@ -106,3 +106,16 @@ ipcMain.handle('encrypt-symmetric', async (event, message, key) => {
 
 	return [encryptedData, error];
 });
+
+ipcMain.handle('decrypt-symmetric', async (event, data, key) => {
+	let decryptedData = null;
+	let error = null;
+
+	try {
+		decryptedData = await decrypt(data, key);
+	} catch (err) {
+		error = err;
+	}
+
+	return [decryptedData, error];
+});
