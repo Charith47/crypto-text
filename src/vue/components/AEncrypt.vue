@@ -4,7 +4,9 @@
 			<v-btn color="primary" elevation="0" @click="generateKeyPair"
 				>Generate Key Pair</v-btn
 			>
-			<v-btn color="primary" class="ml-4" outlined>Select public key</v-btn>
+			<v-btn color="primary" class="ml-4" @click="selectPublicKey" outlined
+				>Select public key</v-btn
+			>
 		</v-container>
 		<v-textarea
 			v-model="message"
@@ -53,6 +55,8 @@ export default {
 			snackbar: false,
 			message: '',
 			encryptedMessage: '',
+			filename: '',
+			pubkey: '',
 		};
 	},
 	methods: {
@@ -60,6 +64,17 @@ export default {
 			try {
 				const result = await ipcRenderer.invoke('gen-key-pair');
 				console.log(result);
+			} catch (err) {
+				console.log(err);
+			}
+		},
+		async selectPublicKey() {
+			try {
+				const result = await ipcRenderer.invoke('open-pub-key');
+				if (result[0]) {
+					this.filename = result[0].filename;
+					this.pubkey = result[0].pubkey;
+				}
 			} catch (err) {
 				console.log(err);
 			}

@@ -158,3 +158,37 @@ ipcMain.handle('gen-key-pair', async (event) => {
 		console.log(err);
 	}
 });
+
+ipcMain.handle('open-pub-key', async (event) => {
+	let data = null;
+	let error = null;
+
+	try {
+		const options = {
+			title: 'Select public key',
+			defaultPath: app.getPath('documents'),
+			buttonLabel: 'Open',
+			filters: [
+				{ name: 'pem', extensions: ['pem'] },
+				{ name: 'All Files', extensions: ['*'] },
+			],
+			properties: ['openFile'],
+		};
+
+		const result = await dialog.showOpenDialog(null, options);
+
+		if (result.canceled) return;
+
+		const loadPath = result.filePaths[0];
+		let buffer = fs.readFileSync(loadPath);
+
+		data = {
+			pubkey: buffer.toString(),
+			filename: path.basename(loadPath),
+		};
+	} catch (err) {
+		error = err;
+	}
+
+	return [data, error];
+});
