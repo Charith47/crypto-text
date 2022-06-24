@@ -18,7 +18,6 @@ export const genKeyPair = () => {
 				},
 				(err, publicKey, privateKey) => {
 					if (err) throw err;
-					console.log(publicKey, privateKey);
 					resolve({ pub: publicKey, pri: privateKey });
 				}
 			);

@@ -1,12 +1,15 @@
 'use strict';
 
-import { app, protocol, BrowserWindow, ipcMain } from 'electron';
+import { app, protocol, BrowserWindow, ipcMain, dialog } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 import { keyGen, encrypt, decrypt } from './symmetric.js';
 import { genKeyPair } from './asymmetric.js';
+
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -126,12 +129,32 @@ ipcMain.handle('decrypt-symmetric', async (event, data, key) => {
 });
 
 ipcMain.handle('gen-key-pair', async (event) => {
-	let data = null;
 	try {
-		data = await genKeyPair();
-		console.log(data);
+		const data = await genKeyPair();
+
+		const options = {
+			title: 'Save keys',
+			defaultPath: app.getPath('documents'),
+			buttonLabel: 'Save',
+			filters: [
+				{ name: 'pem', extensions: ['pem'] },
+				{ name: 'All Files', extensions: ['*'] },
+			],
+			properties: ['openDirectory'],
+		};
+
+		dialog.showOpenDialog(null, options).then((result) => {
+			if (result.canceled) return;
+
+			const savePath = result.filePaths[0];
+
+			for (const key of Object.keys(data)) {
+				fs.writeFile(path.join(savePath, `${key}.pem`), data[key], (err) => {
+					if (err) throw err;
+				});
+			}
+		});
 	} catch (err) {
 		console.log(err);
 	}
-	return data;
 });
