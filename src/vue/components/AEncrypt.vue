@@ -80,7 +80,7 @@ export default {
 		},
 		async selectPublicKey() {
 			try {
-				const result = await ipcRenderer.invoke('open-key');
+				const result = await ipcRenderer.invoke('open-key', 'public');
 				if (result[0]) {
 					this.filename = result[0].filename;
 					this.pubkey = result[0].key;
@@ -92,7 +92,7 @@ export default {
 		async encryptData() {
 			try {
 				if(!this.message || !this.pubkey) return;
-				
+
 				const result = await ipcRenderer.invoke(
 					'encrypt-asymmetric',
 					this.message,

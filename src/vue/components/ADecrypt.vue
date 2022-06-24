@@ -68,7 +68,7 @@ export default {
 	methods: {
 		async decryptData() {
 			if(!this.priKey || !this.ciphertext) return;
-			
+
 			const result = await ipcRenderer.invoke(
 				'decrypt-asymmetric',
 				this.ciphertext,
@@ -80,7 +80,7 @@ export default {
 		},
 		async selectPrivateKey() {
 			try {
-				const result = await ipcRenderer.invoke('open-key');
+				const result = await ipcRenderer.invoke('open-key', 'private');
 				if (result[0]) {
 					this.filename = result[0].filename;
 					this.priKey = result[0].key;
