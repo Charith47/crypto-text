@@ -64,12 +64,14 @@ export default {
 	methods: {
 		async decryptData() {
 			try {
+				if (!this.key || !this.ciphertext) return;
+
 				const result = await ipcRenderer.invoke(
 					'decrypt-symmetric',
 					this.ciphertext,
 					this.key
 				);
-				this.decryptedMessage = result[0].data;
+				if (result[0]) this.decryptedMessage = result[0].data;
 			} catch (err) {
 				console.log(err);
 			}

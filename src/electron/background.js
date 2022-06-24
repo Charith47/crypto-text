@@ -181,7 +181,7 @@ ipcMain.handle('open-key', async (event, type) => {
 
 		const result = await dialog.showOpenDialog(null, options);
 
-		if (result.canceled) return;
+		if (result.canceled) return [data, error];
 
 		const loadPath = result.filePaths[0];
 		let buffer = fs.readFileSync(loadPath);

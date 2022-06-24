@@ -1,8 +1,8 @@
 import { pbkdf2, randomBytes, createCipheriv, createDecipheriv } from 'crypto';
 
 export const keyGen = (password) => {
-	// handle if password is empty
 	return new Promise((resolve, reject) => {
+		if (!password) password = randomBytes(32).toString('hex');
 		const salt = randomBytes(16);
 		try {
 			pbkdf2(password, salt, 100000, 32, 'sha512', (err, derivedKey) => {

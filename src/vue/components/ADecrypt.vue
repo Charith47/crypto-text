@@ -67,6 +67,8 @@ export default {
 	},
 	methods: {
 		async decryptData() {
+			if(!this.priKey || !this.ciphertext) return;
+			
 			const result = await ipcRenderer.invoke(
 				'decrypt-asymmetric',
 				this.ciphertext,

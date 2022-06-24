@@ -80,35 +80,29 @@ export default {
 			message: '',
 		};
 	},
-	mounted() {
-		// load saved data
-	},
-	beforeDestroy() {
-		// save fields in store
-	},
 	methods: {
 		async generateKey() {
+			if (this.password === null) this.password = '';
+			
 			try {
 				const psw = this.password.trim();
 				const result = await ipcRenderer.invoke('gen-symmetric-key', psw);
 				this.key = result[0];
 			} catch (err) {
-				// display error
 				console.log(err);
 			}
 		},
 		async encryptData() {
+			if (!this.message || !this.key) return;
+
 			try {
-				console.log(this.$data);
 				const result = await ipcRenderer.invoke(
 					'encrypt-symmetric',
 					this.message,
 					this.key
 				);
-				console.log(result);
-				this.message = result[0].data;
+				if (result[0]) this.message = result[0].data;
 			} catch (err) {
-				// display error
 				console.log(err);
 			}
 		},

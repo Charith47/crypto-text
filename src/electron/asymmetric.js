@@ -1,4 +1,4 @@
-import { generateKeyPair, publicEncrypt, privateDecrypt, createPublicKey } from 'crypto';
+import { generateKeyPair, publicEncrypt, privateDecrypt } from 'crypto';
 
 export const genKeyPair = () => {
 	return new Promise((resolve, reject) => {

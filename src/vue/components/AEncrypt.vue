@@ -73,8 +73,7 @@ export default {
 	methods: {
 		async generateKeyPair() {
 			try {
-				const result = await ipcRenderer.invoke('gen-key-pair');
-				console.log(result);
+				await ipcRenderer.invoke('gen-key-pair');
 			} catch (err) {
 				console.log(err);
 			}
@@ -92,6 +91,8 @@ export default {
 		},
 		async encryptData() {
 			try {
+				if(!this.message || !this.pubkey) return;
+				
 				const result = await ipcRenderer.invoke(
 					'encrypt-asymmetric',
 					this.message,
