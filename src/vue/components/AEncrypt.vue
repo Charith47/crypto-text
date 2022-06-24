@@ -7,6 +7,15 @@
 			<v-btn color="primary" class="ml-4" @click="selectPublicKey" outlined
 				>Select public key</v-btn
 			>
+			<v-chip
+				v-if="pubkey"
+				pill
+				color="secondary"
+				class="ml-4"
+				close
+				@click:close="clearKey"
+				>pub.pem</v-chip
+			>
 		</v-container>
 		<v-textarea
 			v-model="message"
@@ -27,7 +36,9 @@
 			@click:append="copyToClipboard(encryptedMessage)"
 		>
 		</v-textarea>
-		<v-btn x-large color="primary" block elevation="0">Encrypt!</v-btn>
+		<v-btn x-large color="primary" block elevation="0" @click="encryptData"
+			>Encrypt!</v-btn
+		>
 		<v-btn class="my-4" block elevation="0" @click="clearFields">clear</v-btn>
 		<v-snackbar
 			bottom
@@ -79,6 +90,20 @@ export default {
 				console.log(err);
 			}
 		},
+		async encryptData() {
+			try {
+				const result = await ipcRenderer.invoke(
+					'encrypt-asymmetric',
+					this.message,
+					this.pubkey
+				);
+				if (result[0]) {
+					this.encryptedMessage = result[0];
+				}
+			} catch (err) {
+				console.log(err);
+			}
+		},
 		copyToClipboard(data) {
 			clipboard.writeText(data);
 			this.snackbar = true;
@@ -86,6 +111,12 @@ export default {
 		clearFields() {
 			this.message = '';
 			this.encryptedMessage = '';
+			this.filename = '';
+			this.pubkey = '';
+		},
+		clearKey() {
+			this.pubkey = '';
+			this.filename = '';
 		},
 	},
 };

@@ -1,4 +1,4 @@
-import { generateKeyPair } from 'crypto';
+import { generateKeyPair, publicEncrypt } from 'crypto';
 
 export const genKeyPair = () => {
 	return new Promise((resolve, reject) => {
@@ -21,6 +21,17 @@ export const genKeyPair = () => {
 					resolve({ pub: publicKey, pri: privateKey });
 				}
 			);
+		} catch (err) {
+			reject(err);
+		}
+	});
+};
+
+export const encryptAsymmetric = (message, pubkey) => {
+	return new Promise((resolve, reject) => {
+		try {
+			const encryptedData = publicEncrypt(pubkey, Buffer.from(message));
+			resolve(encryptedData.toString('hex'));
 		} catch (err) {
 			reject(err);
 		}

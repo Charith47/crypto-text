@@ -6,7 +6,7 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 import { keyGen, encrypt, decrypt } from './symmetric.js';
-import { genKeyPair } from './asymmetric.js';
+import { genKeyPair, encryptAsymmetric } from './asymmetric.js';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -186,6 +186,20 @@ ipcMain.handle('open-pub-key', async (event) => {
 			pubkey: buffer.toString(),
 			filename: path.basename(loadPath),
 		};
+	} catch (err) {
+		error = err;
+	}
+
+	return [data, error];
+});
+
+ipcMain.handle('encrypt-asymmetric', async (event,message, key) => {
+	let data = null;
+	let error = null;
+
+	try {
+		const result = await encryptAsymmetric(message, key);
+		data = result;
 	} catch (err) {
 		error = err;
 	}
