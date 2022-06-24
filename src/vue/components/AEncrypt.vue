@@ -8,13 +8,13 @@
 				>Select public key</v-btn
 			>
 			<v-chip
-				v-if="pubkey"
+				v-if="filename"
 				pill
 				color="secondary"
 				class="ml-4"
 				close
 				@click:close="clearKey"
-				>pub.pem</v-chip
+				>{{ filename }}</v-chip
 			>
 		</v-container>
 		<v-textarea
@@ -81,10 +81,10 @@ export default {
 		},
 		async selectPublicKey() {
 			try {
-				const result = await ipcRenderer.invoke('open-pub-key');
+				const result = await ipcRenderer.invoke('open-key');
 				if (result[0]) {
 					this.filename = result[0].filename;
-					this.pubkey = result[0].pubkey;
+					this.pubkey = result[0].key;
 				}
 			} catch (err) {
 				console.log(err);

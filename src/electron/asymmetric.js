@@ -1,4 +1,4 @@
-import { generateKeyPair, publicEncrypt } from 'crypto';
+import { generateKeyPair, publicEncrypt, privateDecrypt, createPublicKey } from 'crypto';
 
 export const genKeyPair = () => {
 	return new Promise((resolve, reject) => {
@@ -32,6 +32,17 @@ export const encryptAsymmetric = (message, pubkey) => {
 		try {
 			const encryptedData = publicEncrypt(pubkey, Buffer.from(message));
 			resolve(encryptedData.toString('hex'));
+		} catch (err) {
+			reject(err);
+		}
+	});
+};
+
+export const decryptAsymmetric = (cipertext, privkey) => {
+	return new Promise((resolve, reject) => {
+		try {
+			const decryptedData = privateDecrypt(privkey, Buffer.from(cipertext, 'hex'));
+			resolve(decryptedData.toString());
 		} catch (err) {
 			reject(err);
 		}

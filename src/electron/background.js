@@ -6,7 +6,11 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 import { keyGen, encrypt, decrypt } from './symmetric.js';
-import { genKeyPair, encryptAsymmetric } from './asymmetric.js';
+import {
+	genKeyPair,
+	encryptAsymmetric,
+	decryptAsymmetric,
+} from './asymmetric.js';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -159,13 +163,13 @@ ipcMain.handle('gen-key-pair', async (event) => {
 	}
 });
 
-ipcMain.handle('open-pub-key', async (event) => {
+ipcMain.handle('open-key', async (event, type) => {
 	let data = null;
 	let error = null;
 
 	try {
 		const options = {
-			title: 'Select public key',
+			title: `Select ${type} key`,
 			defaultPath: app.getPath('documents'),
 			buttonLabel: 'Open',
 			filters: [
@@ -183,7 +187,7 @@ ipcMain.handle('open-pub-key', async (event) => {
 		let buffer = fs.readFileSync(loadPath);
 
 		data = {
-			pubkey: buffer.toString(),
+			key: buffer.toString(),
 			filename: path.basename(loadPath),
 		};
 	} catch (err) {
@@ -193,12 +197,26 @@ ipcMain.handle('open-pub-key', async (event) => {
 	return [data, error];
 });
 
-ipcMain.handle('encrypt-asymmetric', async (event,message, key) => {
+ipcMain.handle('encrypt-asymmetric', async (event, message, key) => {
 	let data = null;
 	let error = null;
 
 	try {
 		const result = await encryptAsymmetric(message, key);
+		data = result;
+	} catch (err) {
+		error = err;
+	}
+
+	return [data, error];
+});
+
+ipcMain.handle('decrypt-asymmetric', async (event, cipertext, key) => {
+	let data = null;
+	let error = null;
+
+	try {
+		const result = await decryptAsymmetric(cipertext, key);
 		data = result;
 	} catch (err) {
 		error = err;
